@@ -1,0 +1,23 @@
+from libs.pixel_search import pixel_search
+from libs.pixel_get_color import get_color as pixel_get_color
+from libs.keyboard_actions import press_and_release, press, release
+from libs.key_mapping import key_mapping
+import time
+import keyboard
+
+def wow_rotation(keys_to_watch):
+    while True:  
+        for key in keys_to_watch:
+            if not keyboard.is_pressed(key_mapping[key]):
+                continue
+            if pixel_get_color(1015, 1695) != (0, 0, 0): # Interupt target
+                press_and_release('=')
+            press(key_mapping[key]) # Run GnomeSequence macro
+            release(key_mapping[key])
+            time.sleep(0.1)
+
+def run(stop_event):
+    keys_to_watch = ['numpad4', 'numpad5', 'numpad7']  # NumPad4, NumPad5, NumPad7
+    while not stop_event.is_set():
+        wow_rotation(keys_to_watch)
+        time.sleep(0.1)
