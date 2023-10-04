@@ -1,0 +1,16 @@
+# Compiled Python files
+*.pyc
+
+# Logs
+*.log
+
+# Virtual environment
+venv/
+
+# IDE files
+.vscode/
+.idea/
+
+# Dependency directories
+__pycache__/
+node_modules/
