@@ -1,5 +1,6 @@
 import pyautogui
 
+# Tool to spy on the pixel color at the current cursor position
 while True:
     # Get the current position of the cursor
     x, y = pyautogui.position()
