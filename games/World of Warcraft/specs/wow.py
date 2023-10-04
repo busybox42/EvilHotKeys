@@ -17,7 +17,7 @@ def wow_rotation(keys_to_watch):
             time.sleep(0.1)
 
 def run(stop_event):
-    keys_to_watch = ['numpad4', 'numpad5', 'numpad7']  # NumPad4, NumPad5, NumPad7
+    keys_to_watch = ['numpad4', 'numpad5', 'numpad7']  
     while not stop_event.is_set():
         wow_rotation(keys_to_watch)
         time.sleep(0.1)
