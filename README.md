@@ -1,6 +1,6 @@
 # EvilHotKeys
 
-EvilHotKeys is a Python script that allows you to automate key presses and scan the pixels colors for various games.  It's intent for me is to replace AutoHotKey as python is compatible on multiple operating systems.
+EvilHotKeys is a Python script that allows you to automate key presses and scan pixel colors for various games.  It's intent for me is to replace AutoHotKey as python is compatible on multiple operating systems.
 
 ## Installation
 
