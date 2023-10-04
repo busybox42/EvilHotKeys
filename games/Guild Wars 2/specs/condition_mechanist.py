@@ -12,7 +12,7 @@ def condition_mechanist_rotation():
         press_and_release('1')
         press_and_release('3')
         
-        if pixel_search((255, 255, 255), 2170, 2045, 2205, 2080):
+        if pixel_search((255, 255, 255), 2170, 2045, 2205, 2080): # Grenade Kit
             sg = pixel_get_color(1425, 2025)
             pg = pixel_get_color(1755, 2026)
             signet = pixel_get_color(2285, 2026)
