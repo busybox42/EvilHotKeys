@@ -6,6 +6,8 @@ import keyboard
 
 def condition_mechanist_rotation():
     while keyboard.is_pressed(79):  # Loop will break if NumPad1 is not pressed
+        if not keyboard.is_pressed(79):
+            break
         press_and_release('2')
         press_and_release('1')
         press_and_release('3')
@@ -75,4 +77,4 @@ def run(stop_event):
         while True:  # Main loop
             if keyboard.is_pressed(79):  
                 condition_mechanist_rotation()
-            time.sleep(0.1)  # Reduce CPU usage
+            time.sleep(0.1)  
