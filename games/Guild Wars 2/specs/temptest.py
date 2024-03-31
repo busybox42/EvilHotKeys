@@ -5,13 +5,13 @@ from libs.key_mapping import key_mapping
 import time
 import keyboard
 
-def temptest_rotation(keys_to_watch):
-    while True:  
+def temptest_rotation(keys_to_watch, stop_event):
+    while not stop_event.is_set():
         for key in keys_to_watch:
             if not keyboard.is_pressed(key_mapping[key]):
                 continue
 
-            if keyboard.is_pressed(key_mapping['numpad1']) :
+            if keyboard.is_pressed(key_mapping['numpad1']):
                 press_and_release('1')
                 press(key_mapping['numpad8'])
                 release(key_mapping['numpad8'])
@@ -25,9 +25,8 @@ def temptest_rotation(keys_to_watch):
                 release(key_mapping['numpad1'])
                 press(key_mapping['numpad7'])
                 release(key_mapping['numpad7'])
-                continue
                 
-            if keyboard.is_pressed(key_mapping['numpad5']) :
+            elif keyboard.is_pressed(key_mapping['numpad5']):
                 press_and_release('3')
                 press(key_mapping['numpad8'])
                 release(key_mapping['numpad8'])
@@ -39,9 +38,8 @@ def temptest_rotation(keys_to_watch):
                 release(key_mapping['numpad1'])
                 press(key_mapping['numpad7'])
                 release(key_mapping['numpad7'])
-                continue
-        
-            if keyboard.is_pressed(key_mapping['numpad6']) :
+                
+            elif keyboard.is_pressed(key_mapping['numpad6']):
                 press_and_release('2')
                 press(key_mapping['numpad6'])
                 release(key_mapping['numpad6'])
@@ -55,9 +53,8 @@ def temptest_rotation(keys_to_watch):
                 release(key_mapping['numpad1'])
                 press(key_mapping['numpad7'])
                 release(key_mapping['numpad7'])
-                continue
-                 
-            if keyboard.is_pressed(key_mapping['numpad7']) :
+                
+            elif keyboard.is_pressed(key_mapping['numpad7']):
                 press_and_release('4')
                 press(key_mapping['numpad8'])
                 release(key_mapping['numpad8'])
@@ -71,10 +68,12 @@ def temptest_rotation(keys_to_watch):
                 release(key_mapping['numpad1'])
                 press(key_mapping['numpad7'])
                 release(key_mapping['numpad7'])
-                continue
+                
+            if stop_event.is_set():
+                break
 
 def run(stop_event):
-    keys_to_watch = ['numpad1', 'numpad5', 'numpad6', 'numpad7']  
+    keys_to_watch = ['numpad1', 'numpad5', 'numpad6', 'numpad7']
     while not stop_event.is_set():
-        temptest_rotation(keys_to_watch)
+        temptest_rotation(keys_to_watch, stop_event)
         time.sleep(0.1)

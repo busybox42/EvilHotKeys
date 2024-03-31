@@ -5,8 +5,8 @@ from libs.key_mapping import key_mapping
 import time
 import keyboard
 
-def outlaw_rotation():
-    while True:
+def outlaw_rotation(stop_event):
+    while not stop_event.is_set():
         if not keyboard.is_pressed(key_mapping['numpad4']):
             continue
 
@@ -49,11 +49,10 @@ def outlaw_rotation():
  
         press(key_mapping['numpad4'])
         release(key_mapping['numpad4'])
-        time.sleep(0.25)
+        time.sleep(0.05)  
 
 def run(stop_event):
     while not stop_event.is_set():
-        while True:  # Main loop
-            if keyboard.is_pressed(key_mapping['numpad4']):  
-                outlaw_rotation()  
-            time.sleep(0.1) 
+        if keyboard.is_pressed(key_mapping['numpad4']):  
+            outlaw_rotation(stop_event)  
+        time.sleep(0.1)  

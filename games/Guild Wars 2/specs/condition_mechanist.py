@@ -5,15 +5,16 @@ from libs.key_mapping import key_mapping
 import time
 import keyboard
 
-def condition_mechanist_rotation():
-    while keyboard.is_pressed(key_mapping['numpad1']):  # Loop will break if NumPad1 is not pressed
-        if not keyboard.is_pressed(key_mapping['numpad1']):
+def condition_mechanist_rotation(stop_event):
+    while not stop_event.is_set():  
+        if not keyboard.is_pressed(key_mapping['numpad1']) or stop_event.is_set():
             break
+        
         press_and_release('2')
         press_and_release('1')
         press_and_release('3')
         
-        if pixel_search((255, 255, 255), 2170, 2045, 2205, 2080): # Grenade Kit
+        if pixel_search((255, 255, 255), 2170, 2045, 2205, 2080):  # Grenade Kit
             sg = pixel_get_color(1425, 2025)
             pg = pixel_get_color(1755, 2026)
             signet = pixel_get_color(2285, 2026)
@@ -75,7 +76,6 @@ def condition_mechanist_rotation():
 
 def run(stop_event):
     while not stop_event.is_set():
-        while True:  # Main loop
-            if keyboard.is_pressed(key_mapping['numpad1']):  
-                condition_mechanist_rotation()
-            time.sleep(0.1)  
+        if keyboard.is_pressed(key_mapping['numpad1']):
+            condition_mechanist_rotation(stop_event)  
+        time.sleep(0.1)  
