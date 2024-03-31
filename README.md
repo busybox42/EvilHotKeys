@@ -4,7 +4,7 @@ EvilHotKeys is a Python script that allows you to automate key presses and scan 
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/your-username/EvilHotKeys.git`
+1. Clone the repository: `git clone https://github.com/busybox42/EvilHotKeys`
 2. Install the required packages: `pip install -r requirements.txt`
 
 ## Usage
