@@ -1,39 +1,53 @@
-from libs.pixel_search import pixel_search
 from libs.pixel_get_color import get_color as pixel_get_color
-from libs.keyboard_actions import press_and_release, press, release
+from libs.keyboard_actions import press_and_release
 from libs.key_mapping import key_mapping
+from PIL import ImageGrab
 import time
 import keyboard
 
+# Constants
+DEFAULT_COLOR = (0, 0, 0)
+
+# Helper function for pixel actions
+def handle_pixel_action(condition_color, key):
+    if condition_color != DEFAULT_COLOR:
+        press_and_release(key)
+
+# Tank rotation logic
 def tank_rotation(stop_event):
-    while not stop_event.is_set():
-       
-        if keyboard.is_pressed(key_mapping['numpad4']):
-            interrupt = pixel_get_color(2345, 875)
-            healerhealth = pixel_get_color(2345, 920)
-            health50 = pixel_get_color(2375, 995)
-            health35 = pixel_get_color(2405, 995)
-            health25 = pixel_get_color(2440, 995)  
-            health75 = pixel_get_color(2345, 995)
+    try:
+        while not stop_event.is_set():
+            # Use an event-driven approach to detect key presses
+            if keyboard.is_pressed(key_mapping['numpad4']):
+                # Grab the entire screen region once
+                screen_image = ImageGrab.grab()
 
-            if interrupt != (0, 0, 0):
-                press_and_release('=')
-            if healerhealth != (0, 0, 0):
-                press_and_release('5')
-            if health50 != (0, 0, 0):
-                press_and_release('4')
-            if health35 != (0, 0, 0):
-                press_and_release('5')
-            if health25 != (0, 0, 0):
-                press_and_release('3')
-            if health75 != (0, 0, 0):
-                press_and_release('0')
+                # Extract relevant pixel colors from the cached screen image
+                interrupt = screen_image.getpixel((2345, 875))
+                healerhealth = screen_image.getpixel((2345, 920))
+                health50 = screen_image.getpixel((2375, 995))
+                health35 = screen_image.getpixel((2405, 995))
+                health25 = screen_image.getpixel((2440, 995))  
+                health75 = screen_image.getpixel((2345, 995))
 
-            press_and_release(key_mapping['numpad4'])
-            
-            time.sleep(0.01) 
+                # Handle actions based on pixel colors
+                handle_pixel_action(interrupt, '=')
+                handle_pixel_action(healerhealth, '5')
+                handle_pixel_action(health50, '4')
+                handle_pixel_action(health35, '5')
+                handle_pixel_action(health25, '3')
+                handle_pixel_action(health75, '0')
 
+                # Repeat pressing numpad4 key after all actions
+                press_and_release(key_mapping['numpad4'])
+                
+                time.sleep(0.2)
+
+    except Exception as e:
+        print(f"An error occurred during tank rotation: {e}")
+
+# Main run function
 def run(stop_event):
     while not stop_event.is_set():
         tank_rotation(stop_event)
-        time.sleep(0.1)  
+        time.sleep(0.1)
