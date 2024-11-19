@@ -11,7 +11,7 @@ def wow4_rotation(stop_event):
             break
         
         while keyboard.is_pressed(key_mapping['numpad4']) and not stop_event.is_set():  
-            if pixel_get_color(1015, 1695) != (0, 0, 0):  # Interupt target
+            if pixel_get_color(2345, 875) != (0, 0, 0):  # Interupt target
                 press_and_release('=')  
             press_and_release(key_mapping['numpad4'])  
             time.sleep(0.1)

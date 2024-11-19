@@ -11,7 +11,7 @@ def wow_rotation(keys_to_watch, stop_event):
             if not keyboard.is_pressed(key_mapping[key]):
                 continue
 
-            if pixel_get_color(1015, 1695) != (0, 0, 0): # Interupt target
+            if pixel_get_color(2345, 875) != (0, 0, 0): # Interupt target
                 press_and_release('=')
             press(key_mapping[key])
             release(key_mapping[key])

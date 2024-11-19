@@ -2,22 +2,25 @@ import threading
 import keyboard
 import time
 
-# Define a global flag to pause the script
-pause_flag = False
+# Event to manage pause state
+pause_event = threading.Event()
 
+# Function to toggle the pause state
+def toggle_pause():
+    if pause_event.is_set():
+        print("Script unpaused")
+        pause_event.clear()
+    else:
+        print("Script paused")
+        pause_event.set()
+
+# Function to manage pausing based on the event
 def pause():
-    global pause_flag
-    pause_state = False
+    keyboard.add_hotkey('end', toggle_pause)
+
+    # Keep the thread alive while listening for pause events
     while True:
-        if keyboard.is_pressed('end'):
-            pause_flag = not pause_flag
-            if pause_flag != pause_state:
-                pause_state = pause_flag
-                if pause_flag:
-                    print('Script paused')
-                else:
-                    print('Script unpaused')
-            time.sleep(0.05)
+        time.sleep(1)
 
 # Start the pause thread
 pause_thread = threading.Thread(target=pause, daemon=True)

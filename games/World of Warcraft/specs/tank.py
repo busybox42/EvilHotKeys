@@ -9,12 +9,12 @@ def tank_rotation(stop_event):
     while not stop_event.is_set():
        
         if keyboard.is_pressed(key_mapping['numpad4']):
-            interrupt = pixel_get_color(1060, 1755)
-            healerhealth = pixel_get_color(1015, 1975)
-            health50 = pixel_get_color(1170, 2105)
-            health35 = pixel_get_color(1110, 2105)
-            health25 = pixel_get_color(1060, 2105)  
-            health75 = pixel_get_color(1235, 2105)
+            interrupt = pixel_get_color(2345, 875)
+            healerhealth = pixel_get_color(2345, 920)
+            health50 = pixel_get_color(2375, 995)
+            health35 = pixel_get_color(2405, 995)
+            health25 = pixel_get_color(2440, 995)  
+            health75 = pixel_get_color(2345, 995)
 
             if interrupt != (0, 0, 0):
                 press_and_release('=')
