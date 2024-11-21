@@ -14,3 +14,7 @@ venv/
 # Dependency directories
 __pycache__/
 node_modules/
+
+# Ignore my desktop start up scripts
+./bin/launch-gui.sh
+.nohup.out
