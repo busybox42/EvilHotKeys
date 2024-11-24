@@ -37,7 +37,7 @@ def druidheals_rotation(stop_event):
                     if interrupt_target != DEFAULT_COLOR:
                         press_and_release('=')
 
-                    # Check for another action
+                    # Combo bust
                     finish_color = screen_image.getpixel((2378, 878))
                     if finish_color != DEFAULT_COLOR:
                         press_and_release('0')
