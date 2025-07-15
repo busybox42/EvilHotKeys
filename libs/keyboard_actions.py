@@ -27,3 +27,24 @@ def release(key):
         keyboard.release(key)
     except ValueError:
         print(f"Error: Key '{key}' is not recognized.")
+
+# Define a function to mash a button multiple times to ensure it registers
+def button_mash(key, presses=3, delay=0.05, stop_check=None):
+    """Mash a button multiple times to ensure it registers
+    
+    Args:
+        key: The key to press
+        presses: Number of times to press the key (default: 3)
+        delay: Delay between presses (default: 0.05)
+        stop_check: Optional function that returns True if we should stop
+    
+    Returns:
+        True if completed all presses, False if stopped early
+    """
+    for _ in range(presses):
+        if stop_check and stop_check():
+            return False
+        press(key)
+        release(key)
+        time.sleep(delay)
+    return True

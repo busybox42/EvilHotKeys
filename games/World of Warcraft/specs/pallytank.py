@@ -16,11 +16,11 @@ def pallytank_rotation(stop_event):
             screen_image = ImageGrab.grab()
 
             # Extract pixel colors for checks
-            interrupt_target = screen_image.getpixel((2345, 875))
-            health_check_3 = screen_image.getpixel((2345, 995))
-            health_check_4 = screen_image.getpixel((2378, 995))
-            health_check_5 = screen_image.getpixel((2408, 995))
-            health_check_6 = screen_image.getpixel((2465, 995))
+            interrupt_target = screen_image.getpixel((2505, 945))
+            health_check_3 = screen_image.getpixel((2505, 975))
+            health_check_4 = screen_image.getpixel((2530, 975))
+            health_check_5 = screen_image.getpixel((2550, 975))
+            health_check_6 = screen_image.getpixel((2575, 975))
 
             # Interrupt target
             if interrupt_target != DEFAULT_COLOR:

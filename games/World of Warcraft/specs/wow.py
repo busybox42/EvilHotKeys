@@ -19,7 +19,7 @@ def wow_rotation(keys_to_watch, stop_event):
                     screen_image = ImageGrab.grab()
 
                     # Check for interrupt condition
-                    interrupt_target = screen_image.getpixel((2345, 875))
+                    interrupt_target = screen_image.getpixel((2505, 945))
                     if interrupt_target != DEFAULT_COLOR:
                         press_and_release('=')
 

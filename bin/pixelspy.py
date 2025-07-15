@@ -1,4 +1,44 @@
-import pyautogui
+import os
+import subprocess
+
+# If running as root, configure the DISPLAY and XAUTHORITY settings
+if os.geteuid() == 0:
+    if "SUDO_USER" in os.environ:
+        user = os.environ["SUDO_USER"]
+        os.environ["DISPLAY"] = os.environ.get("DISPLAY", ":0")
+        xauth_path = f"/home/{user}/.Xauthority"
+        if os.path.exists(xauth_path):
+            os.environ["XAUTHORITY"] = xauth_path
+        else:
+            print(f"Warning: Xauthority file not found at {xauth_path}.")
+            print("Attempting to grant root access to the X server using xhost...")
+            try:
+                subprocess.run(["sudo", "-u", user, "xhost", "+SI:localuser:root"], check=True)
+                print("xhost command executed successfully.")
+            except Exception as e:
+                print("Failed to run xhost command:", e)
+
+# Attempt to override the screenshot method with one using mss
+try:
+    import mss
+    from PIL import Image
+
+    def mss_screenshot(region=None):
+        with mss.mss() as sct:
+            if region:
+                # region should be a dict: {'top': y, 'left': x, 'width': w, 'height': h}
+                sct_img = sct.grab(region)
+            else:
+                sct_img = sct.grab(sct.monitors[0])
+            return Image.frombytes("RGB", sct_img.size, sct_img.rgb)
+
+    # Import pyautogui and override its screenshot function
+    import pyautogui
+    pyautogui.screenshot = mss_screenshot
+except ImportError:
+    print("mss library not found; falling back to default screenshot method.")
+    import pyautogui
+
 import time
 import threading
 import keyboard
@@ -32,7 +72,6 @@ def pixel_spy():
 def exit_listener():
     keyboard.wait('esc')
     print("\nExit key pressed. Stopping pixel spy.")
-    # Exit the program
     raise KeyboardInterrupt
 
 # Start the pixel spy in a separate thread
