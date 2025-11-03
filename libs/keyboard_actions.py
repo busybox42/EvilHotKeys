@@ -1,5 +1,8 @@
 import keyboard
 import time
+from libs.logger import get_logger
+
+logger = get_logger('keyboard_actions')
 
 # Define a function to press and release a key with an optional delay
 def press_and_release(key, delay=0.02):
@@ -18,15 +21,19 @@ def hold_key_while_pressed(hotkey, keys_to_press, delay=0.02):
 def press(key):
     try:
         keyboard.press(key)
-    except ValueError:
-        print(f"Error: Key '{key}' is not recognized.")
+    except ValueError as e:
+        logger.error(f"Key '{key}' is not recognized: {e}")
+    except Exception as e:
+        logger.error(f"Error pressing key '{key}': {e}")
 
 # Define a function to release a key
 def release(key):
     try:
         keyboard.release(key)
-    except ValueError:
-        print(f"Error: Key '{key}' is not recognized.")
+    except ValueError as e:
+        logger.error(f"Key '{key}' is not recognized: {e}")
+    except Exception as e:
+        logger.error(f"Error releasing key '{key}': {e}")
 
 # Define a function to mash a button multiple times to ensure it registers
 def button_mash(key, presses=3, delay=0.05, stop_check=None):

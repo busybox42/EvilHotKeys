@@ -4,16 +4,19 @@ import threading
 import os
 from importlib import import_module, reload
 from libs.menu_customization import customize_menu, customize_specs
+from libs.logger import get_logger
 import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image
 from PIL import ImageTk
 
+logger = get_logger('main-gui')
+
 
 # Function to run the spec
 def run_spec(selected_game, selected_spec, stop_event):
    try:
-       print(f"Running spec '{selected_spec}' for game '{selected_game}'.")
+       logger.info(f"Running spec '{selected_spec}' for game '{selected_game}'")
        module_name = f'games.{selected_game}.specs.{selected_spec}'
        
        # If module is already imported, reload it
@@ -28,11 +31,17 @@ def run_spec(selected_game, selected_spec, stop_event):
        else:
            raise AttributeError(f"Spec '{selected_spec}' is missing the 'run' function.")
    except ModuleNotFoundError as e:
+       logger.error(f"Failed to load spec '{selected_spec}': {e}")
        messagebox.showerror("Error", f"Failed to load spec '{selected_spec}' for game '{selected_game}'.\n{e}")
+       raise  # Re-raise so GUI can handle it
    except AttributeError as e:
+       logger.error(f"Spec '{selected_spec}' AttributeError: {e}")
        messagebox.showerror("Error", f"Spec '{selected_spec}' encountered an AttributeError.\n{e}")
+       raise  # Re-raise so GUI can handle it
    except Exception as e:
+       logger.exception(f"Unexpected error in spec: {e}")
        messagebox.showerror("Unexpected Error", f"An unexpected error occurred: {e}")
+       raise  # Re-raise so GUI can handle it
 
 
 # GUI Application Class
@@ -48,7 +57,7 @@ class SpecRunnerApp:
            photo = ImageTk.PhotoImage(img)
            self.root.iconphoto(False, photo)
        except Exception as e:
-           print(f"Failed to load icon: {e}")
+           logger.warning(f"Failed to load icon: {e}")
 
        # Handle window close event (X button)
        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -166,8 +175,14 @@ class SpecRunnerApp:
        self.stop_button.config(state='normal')
 
        def run_in_thread():
-           run_spec(selected_game, selected_spec, self.stop_event)
-           self.root.after(0, self.on_spec_complete)
+           try:
+               run_spec(selected_game, selected_spec, self.stop_event)
+           except Exception as e:
+               logger.exception(f"Spec crashed: {e}")
+               self.root.after(0, lambda: self.on_spec_error(str(e)))
+           finally:
+               # Always restore button state, even if spec crashes
+               self.root.after(0, self.on_spec_complete)
 
        self.spec_thread = threading.Thread(target=run_in_thread, daemon=True)
        self.spec_thread.start()
@@ -175,6 +190,12 @@ class SpecRunnerApp:
    def on_spec_complete(self):
        self.run_button.config(state='normal')
        self.stop_button.config(state='disabled')
+       logger.info("Spec execution completed")
+
+   def on_spec_error(self, error_msg):
+       """Handle spec errors"""
+       logger.error(f"Spec error: {error_msg}")
+       # Button state will be restored by on_spec_complete in finally block
 
    def stop_spec(self):
        self.stop_event.set()
@@ -184,9 +205,9 @@ class SpecRunnerApp:
        if self.spec_thread.is_alive():
            self.spec_thread.join(timeout=2)
            if self.spec_thread.is_alive():
-               print("The spec did not terminate as expected. You may experience some delay.")
+               logger.warning("The spec did not terminate as expected. You may experience some delay.")
            else:
-               print("Spec stopped successfully.")
+               logger.info("Spec stopped successfully")
 
    def on_close(self):
        self.stop_event.set()
@@ -198,7 +219,7 @@ class SpecRunnerApp:
 
 # Signal handler for graceful shutdown
 def signal_handler(sig, frame):
-   print('\nYou pressed Ctrl+C! Exiting gracefully.')
+   logger.info('\nCtrl+C pressed. Exiting gracefully.')
    sys.exit(0)
 
 

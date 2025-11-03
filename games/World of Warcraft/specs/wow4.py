@@ -1,9 +1,12 @@
 from libs.pixel_get_color import get_color as pixel_get_color
 from libs.keyboard_actions import press_and_release
 from libs.key_mapping import key_mapping
-from PIL import ImageGrab
+from libs.logger import get_logger
+from libs.wow_helpers import get_coord
 import time
 import keyboard
+
+logger = get_logger('wow4')
 
 # Constants
 DEFAULT_COLOR = (0, 0, 0)
@@ -11,13 +14,21 @@ DEFAULT_COLOR = (0, 0, 0)
 # WoW4 Rotation Logic
 def wow4_rotation(stop_event):
     try:
-        while not stop_event.is_set() and keyboard.is_pressed(key_mapping['numpad4']):
-            # Grab the entire screen region once
-            screen_image = ImageGrab.grab()
-
-            # Extract pixel color for interrupt check
-            interrupt_target = screen_image.getpixel((2345, 875))
-            if interrupt_target != DEFAULT_COLOR:  # Interrupt target
+        # Get interrupt coordinate from config
+        interrupt_x, interrupt_y = get_coord('interrupt')
+        logger.info(f"Using interrupt coordinate: ({interrupt_x}, {interrupt_y})")
+        
+        while not stop_event.is_set():
+            # Check stop event first
+            if stop_event.is_set():
+                break
+                
+            # Only continue if key is still pressed
+            if not keyboard.is_pressed(key_mapping['numpad4']):
+                break
+            # Check interrupt using abstraction layer
+            interrupt_target = pixel_get_color(interrupt_x, interrupt_y)
+            if interrupt_target and interrupt_target != DEFAULT_COLOR:
                 press_and_release('=')
 
             # Default key press
@@ -25,7 +36,7 @@ def wow4_rotation(stop_event):
             time.sleep(0.2)  # Increased sleep to reduce CPU usage
 
     except Exception as e:
-        print(f"An error occurred during wow4 rotation: {e}")
+        logger.exception(f"An error occurred during wow4 rotation: {e}")
 
 # Main run function
 def run(stop_event):

@@ -42,6 +42,13 @@ except ImportError:
 import time
 import threading
 import keyboard
+import sys
+import os
+
+# Add the parent directory to the path so we can import our libs
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from libs.pixel_get_color import get_color
 
 # Tool to spy on the pixel color at the current cursor position
 def pixel_spy():
@@ -53,8 +60,8 @@ def pixel_spy():
 
             # Only fetch the color and print if the cursor has moved
             if (x, y) != (prev_x, prev_y):
-                # Get the color of the pixel at the cursor position
-                pixel_color = pyautogui.pixel(x, y)
+                # Get the color of the pixel at the cursor position using our custom function
+                pixel_color = get_color(x, y)
 
                 # Print the cursor position and color
                 print(f"Cursor Position: ({x}, {y}) - Pixel Color (RGB): {pixel_color}")

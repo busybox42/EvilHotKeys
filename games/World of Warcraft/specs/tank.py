@@ -1,8 +1,12 @@
-import time  # Import the time module
-import mss
+import time
 import keyboard
 from libs.keyboard_actions import press_and_release
 from libs.key_mapping import key_mapping
+from libs.pixel_get_color import get_multiple_pixel_colors
+from libs.logger import get_logger
+from libs.wow_helpers import get_coords, log_coords_once
+
+logger = get_logger('tank')
 
 DEFAULT_COLOR = (0, 0, 0)
 
@@ -12,38 +16,49 @@ def handle_pixel_action(condition_color, key):
 
 def tank_rotation(stop_event):
     try:
-        with mss.mss() as sct:
-            # Define the bounding box for your screen region (adjust based on your screen)
-            monitor = {"top": 800, "left": 2300, "width": 200, "height": 250}
-            
-            while not stop_event.is_set():
-                if keyboard.is_pressed(key_mapping['numpad4']):
-                    # Capture the defined region
-                    screen_image = sct.grab(monitor)
-                    pixels = screen_image.pixels  # Access pixel data
-
-                    # Get colors of specific pixels (adjust offsets for your coordinates)
-                    interrupt = pixels[2505][945]   # (2505, 970) relative to top-left of monitor
-                    #healerhealth = pixels[120][45]  # (2345, 920)
-                    health50 = pixels[2530][975]  # (2530, 998)
-                    health35 = pixels[2550][975]  # (2550, 998)
-                    health25 = pixels[2575][975]  # (2575, 998)
-                    health75 = pixels[2505][975]  # (2505, 998)
-
+        # Load coordinates from config
+        interrupt, health50, health35, health25, health75 = get_coords(
+            'interrupt', 'health_50', 'health_35', 'health_25', 'health_75'
+        )
+        
+        # Log once for debugging
+        log_coords_once({
+            'interrupt': interrupt,
+            'health_50': health50,
+            'health_35': health35,
+            'health_25': health25,
+            'health_75': health75
+        })
+        
+        while not stop_event.is_set():
+            # Check stop event first
+            if stop_event.is_set():
+                break
+                
+            if keyboard.is_pressed(key_mapping['numpad4']):
+                # Get all pixel colors using config coordinates
+                coords = [interrupt, health50, health35, health25, health75]
+                
+                # Get all pixel colors efficiently in one call
+                colors = get_multiple_pixel_colors(coords)
+                
+                if len(colors) == 5:
+                    interrupt_color, health50_color, health35_color, health25_color, health75_color = colors
+                    
                     # Perform actions based on pixel colors
-                    handle_pixel_action(interrupt, '=')
-                    #handle_pixel_action(healerhealth, '5')
-                    handle_pixel_action(health50, '4')
-                    handle_pixel_action(health35, '5')
-                    handle_pixel_action(health25, '3')
-                    handle_pixel_action(health75, '0')
+                    handle_pixel_action(interrupt_color, '=')
+                    handle_pixel_action(health50_color, '4')
+                    handle_pixel_action(health35_color, '5')
+                    handle_pixel_action(health25_color, '3')
+                    handle_pixel_action(health75_color, '1')
 
-                    press_and_release(key_mapping['numpad4'])
+                press_and_release(key_mapping['numpad4'])
+                time.sleep(0.2)  # Sleep after action
 
-                # Adjust sleep for minimal delay without excessive CPU usage
-                time.sleep(0.1)
+            # Always sleep to prevent busy-waiting
+            time.sleep(0.05)
     except Exception as e:
-        print(f"An error occurred during tank rotation: {e}")
+        logger.exception(f"An error occurred during tank rotation: {e}")
 
 def run(stop_event):
     tank_rotation(stop_event)
